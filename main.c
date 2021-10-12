@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <pthread.h>
-
+#include "philo.h"
 
 /* 
 memset, printf, malloc, free, write,
@@ -16,41 +11,32 @@ pthread_mutex_unlock
 잠을 다 자면 생각한다
 생각 후 식사한다
  */
-pthread_mutex_t mutex;
-int cnt = 0;
 
-void *count(void *arg)
+// 기능: argv가 숫자인지 4~5개 인자인지 확인, 리턴: int (맞으면 1 아니면 0)
+static int	check_input(int argc, char *argv[])
 {
-	int i;
-	char *name = (char *)arg;
+	int	i;
+	int	j;
 
-	pthread_mutex_lock(&mutex);
-
-	cnt = 0;
-	for (i = 0; i < 10; i++)
+	i = 0;
+	if (argc < 5 || argc > 6)
+		return (0);
+	while (++i < argc)
 	{
-		printf("%s cnt: %d\n", name, cnt);
-		cnt++;
-		usleep(1);
+		j = -1;
+		while (argv[i][++j] != '\0')
+			if (!ft_isdigit(argv[i][j]))
+				return (0);
+		if (ft_atoi(argv[i]) < 0)
+			return (0);
 	}
-	
-	pthread_mutex_unlock(&mutex);
+	return (1);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
-	// if (argc != 5 || argc != 6)
-	// 	exit(0);
-	pthread_t thread1, thread2;
-
-	pthread_mutex_init(&mutex, NULL);
-	
-	pthread_create(&thread1, NULL, count, (void *)"thread1");
-	pthread_create(&thread2, NULL, count, (void *)"thread2");
-
-	pthread_join(thread1, NULL);
-	pthread_join(thread2, NULL);
-
-	pthread_mutex_destroy(&mutex);
+	if (!check_input(argc, argv))
+		exit(0);
+	printf("good\n");
 	return (0);
 }

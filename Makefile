@@ -1,3 +1,2 @@
 all : 
-	gcc main.c
-	./a.out
+	gcc main.c ft_util.c
