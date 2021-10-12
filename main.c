@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 
 /* 
@@ -12,21 +13,41 @@ pthread_mutex_destroy, pthread_mutex_lock,
 pthread_mutex_unlock
  */
 
+void p_function(void *data)
+{
+	pthread_t tid;
+
+	tid = pthread_self();
+
+	char *thread_name = (char *)data;
+	int i = 0;
+
+	while (i < 3) {
+		printf("thread name: %s, tid: %x\n", thread_name, (unsigned int)tid);
+		i++;
+		usleep(1000 * 1000);
+	}
+}
 
 int main(int argc, char **argv)
 {
 	// if (argc != 5 || argc != 6)
 	// 	exit(0);
-	struct timeval startTime, endTime;
-    double diff_tv_sec;
-    double diff_tv_usec;
+	pthread_t pthread;
+	int thr_id;
+	int status;
+	char p1[] = "thread_created";
+	char p2[] = "thread_main";
 
-    gettimeofday(&startTime, NULL);
-    usleep(1000 * 1000);
-    gettimeofday(&endTime, NULL);
-    diff_tv_sec = ( endTime.tv_sec - startTime.tv_sec );
-    diff_tv_usec = ( endTime.tv_usec - startTime.tv_usec ) / 1000000;
-    printf("%f seconds\n", diff_tv_sec); // f는 (double로) 형변환해 출력.
-    printf("%f micro seconds\n", diff_tv_usec);
+	thr_id = pthread_create(&pthread, NULL, p_function, (void *)p1);
+	if (thr_id < 0) {
+		perror("thread0 create error");
+		exit(EXIT_FAILURE);
+	}
+
+	p_function((void *)p2);
+
+	printf("created thread id: %x\n", pthread);
+	printf("end\n");
 	return (0);
 }
