@@ -9,7 +9,7 @@ pthread_mutex_unlock
 
 식사를 마치면 포크를 내려놓고 잠을 잔다
 잠을 다 자면 생각한다
-생각 후 식사한다
+생각 후 식사한다(잠자고 난 후 바로 식사시간이면 생각 패스)
  */
 
 // 기능: argv가 숫자인지 4~5개 인자인지 확인, 리턴: int (맞으면 1 아니면 0)
@@ -33,6 +33,7 @@ static int	check_input(int argc, char *argv[])
 	return (1);
 }
 
+// 기능: 필로에 대한 값 초기화, 리턴: void
 void	init_philo(t_philo *philo, int num)
 {
 	int	i;
@@ -42,15 +43,15 @@ void	init_philo(t_philo *philo, int num)
 	{
 		philo[i].name = i + 1;
 		philo[i].eat_cnt = 0;
-		philo[i].death = 0;
 	}
 }
 
+
+// 기능: input으로 들어온 값 파싱, 리턴: 성공 1, 실패 0
 int	parse_input(t_input *data, char *argv[])
 {
 	data->people = ft_atoi(argv[1]);
 	data->fork = malloc(sizeof(pthread_mutex_t) * data->people);
-	// philo = malloc(sizeof(t_philo) * ft_atoi(argv[1]));
 	if (!data->fork)
 		return (0);
 	data->time_to_die = ft_atoi(argv[2]);
@@ -58,7 +59,6 @@ int	parse_input(t_input *data, char *argv[])
 	data->must_eat = -1;
 	if (argv[5])
 		data->must_eat = ft_atoi(argv[5]);
-	// init_philo(philo, data->people);
 	return (1);
 }
 
@@ -66,20 +66,21 @@ int main(int argc, char *argv[])
 {
 	t_input	data;
 	t_philo	*philo;
+	int		i;
 
 	if (!check_input(argc, argv))
-	{
-		printf("input Error\n");
-		exit(0);
-	}
+		return (process_error("input"));
 	if (!parse_input(&data, argv))
-	{
-		printf("parsing Error\n");
-		exit(0);
-	}
+		return (process_error("parse"));
+	i = -1;
+	while (++i < data.people)
+		pthread_mutex_init(&data.fork[i], NULL);
+	pthread_mutex_init(&data.output, NULL);
+	pthread_mutex_init(&data.only_one_death, NULL);
 	philo = malloc(sizeof(philo) * data.people);
+	if (!philo)
+		return (process_error("malloc"));
 	init_philo(philo, data.people);
-	printf("hello\n");
-	printf("%d\n", philo[1].death);
+	
 	return (0);
 }

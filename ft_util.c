@@ -1,5 +1,11 @@
 #include "philo.h"
 
+int	process_error(char *str)
+{
+	printf("%s error\n", str);
+	return (0);
+}
+
 int	ft_isdigit(int c)
 {
 	if (c >= '0' && c <= '9')
@@ -42,4 +48,15 @@ int	ft_atoi(const char *str)
 		i++;
 	}
 	return (sign * num);
+}
+
+unsigned long	get_current_time(void)
+{
+	struct timeval	tmp;
+	unsigned long	milisecond;
+
+	if (gettimeofday(&tmp, NULL) == -1)
+		process_error("gettimeofday");
+	milisecond = tmp.tv_sec * 1000 + tmp.tv_usec / 1000;
+	return (milisecond);
 }
