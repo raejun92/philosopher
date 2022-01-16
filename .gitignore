@@ -1,4 +1,8 @@
 /reference
+/.vscode
+test.c
+test2.c
+delete.c
 # Prerequisites
 *.d
 

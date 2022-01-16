@@ -27,16 +27,59 @@ static int	check_input(int argc, char *argv[])
 		while (argv[i][++j] != '\0')
 			if (!ft_isdigit(argv[i][j]))
 				return (0);
-		if (ft_atoi(argv[i]) < 0)
+		if (ft_atoi(argv[i]) <= 0)
 			return (0);
 	}
 	return (1);
 }
 
+void	init_philo(t_philo *philo, int num)
+{
+	int	i;
+
+	i = -1;
+	while (++i < num)
+	{
+		philo[i].name = i + 1;
+		philo[i].eat_cnt = 0;
+		philo[i].death = 0;
+	}
+}
+
+int	parse_input(t_input *data, char *argv[])
+{
+	data->people = ft_atoi(argv[1]);
+	data->fork = malloc(sizeof(pthread_mutex_t) * data->people);
+	// philo = malloc(sizeof(t_philo) * ft_atoi(argv[1]));
+	if (!data->fork)
+		return (0);
+	data->time_to_die = ft_atoi(argv[2]);
+	data->time_to_eat = ft_atoi(argv[3]);
+	data->must_eat = -1;
+	if (argv[5])
+		data->must_eat = ft_atoi(argv[5]);
+	// init_philo(philo, data->people);
+	return (1);
+}
+
 int main(int argc, char *argv[])
 {
+	t_input	data;
+	t_philo	*philo;
+
 	if (!check_input(argc, argv))
+	{
+		printf("input Error\n");
 		exit(0);
-	printf("good\n");
+	}
+	if (!parse_input(&data, argv))
+	{
+		printf("parsing Error\n");
+		exit(0);
+	}
+	philo = malloc(sizeof(philo) * data.people);
+	init_philo(philo, data.people);
+	printf("hello\n");
+	printf("%d\n", philo[1].death);
 	return (0);
 }
