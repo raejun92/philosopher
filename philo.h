@@ -28,7 +28,7 @@ typedef struct	s_philo
 	pthread_t		thread;
 	int				name;
 	int				eat_cnt;
-	unsigned long	last_meal;
+	unsigned long	last_meal_time;
 	t_input			*data;
 }t_philo;
 
@@ -38,4 +38,9 @@ int				ft_isdigit(int c);
 int				ft_atoi(const char *str);
 unsigned long	get_current_time(void);
 
+/* ft_util2.c */
+void			send_message(t_philo *philo, int status);
+
+/* run.c */
+void			run_philo(t_philo *philo);
 #endif

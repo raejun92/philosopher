@@ -34,7 +34,7 @@ static int	check_input(int argc, char *argv[])
 }
 
 // 기능: 필로에 대한 값 초기화, 리턴: void
-void	init_philo(t_philo *philo, t_input *data)
+static void	init_philo(t_philo *philo, t_input *data)
 {
 	int	i;
 
@@ -44,7 +44,7 @@ void	init_philo(t_philo *philo, t_input *data)
 		philo[i].name = i + 1;
 		philo[i].eat_cnt = 0;
 		philo[i].data = data;
-		philo[i].last_meal = 0;
+		philo[i].last_meal_time = 0;
 		philo[i].l_fork = &(data->fork[i]);
 		if (i == data->people - 1)
 			philo[i].r_fork = &(data->fork[0]);
@@ -55,7 +55,7 @@ void	init_philo(t_philo *philo, t_input *data)
 
 
 // 기능: input으로 들어온 값 파싱, 리턴: 성공 1, 실패 0
-int	parse_input(t_input *data, char *argv[])
+static int	parse_input(t_input *data, char *argv[])
 {
 	data->people = ft_atoi(argv[1]);
 	data->fork = malloc(sizeof(pthread_mutex_t) * data->people);
@@ -91,6 +91,6 @@ int main(int argc, char *argv[])
 	if (!philo)
 		return (process_error("malloc"));
 	init_philo(philo, &data);
-	// run_philo();
+	run_philo(philo);
 	return (0);
 }
