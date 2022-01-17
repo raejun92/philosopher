@@ -23,9 +23,13 @@ typedef struct	s_input
 
 typedef struct	s_philo
 {
+	pthread_mutex_t	*l_fork;
+	pthread_mutex_t	*r_fork;
 	pthread_t		thread;
 	int				name;
 	int				eat_cnt;
+	unsigned long	last_meal;
+	t_input			*data;
 }t_philo;
 
 /* ft_util.c */

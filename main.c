@@ -34,15 +34,22 @@ static int	check_input(int argc, char *argv[])
 }
 
 // 기능: 필로에 대한 값 초기화, 리턴: void
-void	init_philo(t_philo *philo, int num)
+void	init_philo(t_philo *philo, t_input *data)
 {
 	int	i;
 
 	i = -1;
-	while (++i < num)
+	while (++i < data->people)
 	{
 		philo[i].name = i + 1;
 		philo[i].eat_cnt = 0;
+		philo[i].data = data;
+		philo[i].last_meal = 0;
+		philo[i].l_fork = &(data->fork[i]);
+		if (i == data->people - 1)
+			philo[i].r_fork = &(data->fork[0]);
+		else
+			philo[i].r_fork = &(data->fork[i + 1]);
 	}
 }
 
@@ -56,9 +63,12 @@ int	parse_input(t_input *data, char *argv[])
 		return (0);
 	data->time_to_die = ft_atoi(argv[2]);
 	data->time_to_eat = ft_atoi(argv[3]);
+	data->time_to_sleep = ft_atoi(argv[4]);
 	data->must_eat = -1;
 	if (argv[5])
 		data->must_eat = ft_atoi(argv[5]);
+	data->check_death = 0;
+	data->start_time = 0;
 	return (1);
 }
 
@@ -80,7 +90,7 @@ int main(int argc, char *argv[])
 	philo = malloc(sizeof(philo) * data.people);
 	if (!philo)
 		return (process_error("malloc"));
-	init_philo(philo, data.people);
-	
+	init_philo(philo, &data);
+	// run_philo();
 	return (0);
 }
