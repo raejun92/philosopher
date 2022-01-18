@@ -16,7 +16,7 @@ typedef struct	s_input
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	int				must_eat; // 모든 철학자가 먹어야 함
+	int				must_eat;
 	int				check_death;
 	unsigned long	start_time;
 }t_input;
