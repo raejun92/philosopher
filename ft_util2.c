@@ -6,7 +6,7 @@ void	send_message(t_philo *philo, int status)
 
 	pthread_mutex_lock(&philo->data->output);
 	output_time = get_current_time() - philo->data->start_time;
-	if (philo->data->check_death == 0)
+	if (philo->data->check_death == 0 && status > 0)
 	{
 		if (status == 1)
 			printf("%lu %d has taken a fork\n", output_time, philo->name);
