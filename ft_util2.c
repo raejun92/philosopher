@@ -1,6 +1,6 @@
 #include "philo.h"
 
-void	send_message(t_philo *philo, int status)
+int	send_message(t_philo *philo, int status)
 {
 	unsigned long	output_time;
 
@@ -20,4 +20,7 @@ void	send_message(t_philo *philo, int status)
 	else
 		printf("%lu %d died\n", output_time, philo->name);
 	pthread_mutex_unlock(&philo->data->output);
+	if (philo->data->check_death == 1)
+		return (1);
+	return (0);
 }

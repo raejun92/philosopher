@@ -22,12 +22,14 @@ int	grap_fork(t_philo *philo)
 	return (0);
 }
 
-void	have_a_meal(t_philo *philo)
+int	have_a_meal(t_philo *philo)
 {
 	philo->last_meal_time = get_current_time();
-	send_message(philo, 2);
+	if (send_message(philo, 2) == 1)
+		return (1);
 	spend_time(philo->data->time_to_eat);
 	philo->eat_cnt++;
+	return (0);
 }
 
 void	drop_fork(t_philo *philo)
@@ -71,22 +73,15 @@ void *run_thread(void *tmp)
 	{
 		if (grap_fork(philo) == 1)
 			break ;
-		have_a_meal(philo);
-		if (philo->data->check_death == 1)
+		if (have_a_meal(philo))
 			break ;
 		drop_fork(philo);
-		if (philo->data->check_death == 1)
+		if (philo->data->must_eat == philo->eat_cnt || philo->data->check_death == 1)
 			break ;
-		if (philo->data->must_eat == philo->eat_cnt)
-			break ;
-		send_message(philo, 3);
-		if (philo->data->check_death == 1)
+		if (send_message(philo, 3) == 1)
 			break ;
 		spend_time(philo->data->time_to_sleep);
-		if (philo->data->check_death == 1)
-			break ;
-		send_message(philo, 4);
-		if (philo->data->check_death == 1)
+		if (send_message(philo, 4) == 1)
 			break ;
 	}
 	pthread_join(monitor, NULL);

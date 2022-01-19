@@ -39,7 +39,7 @@ int				ft_atoi(const char *str);
 unsigned long	get_current_time(void);
 
 /* ft_util2.c */
-void			send_message(t_philo *philo, int status);
+int				send_message(t_philo *philo, int status);
 
 /* run.c */
 void			run_philo(t_philo *philo);
