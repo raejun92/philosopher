@@ -40,6 +40,8 @@ unsigned long	get_current_time(void);
 
 /* ft_util2.c */
 int				send_message(t_philo *philo, int status);
+void			spend_time(unsigned long time);
+void			drop_fork(t_philo *philo);
 
 /* run.c */
 void			run_philo(t_philo *philo);

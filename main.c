@@ -1,17 +1,5 @@
 #include "philo.h"
 
-/* 
-memset, printf, malloc, free, write,
-usleep, gettimeofday, pthread_create,
-pthread_detach, pthread_join, pthread_mutex_init,
-pthread_mutex_destroy, pthread_mutex_lock,
-pthread_mutex_unlock
-
-식사를 마치면 포크를 내려놓고 잠을 잔다
-잠을 다 자면 생각한다
-생각 후 식사한다(잠자고 난 후 바로 식사시간이면 생각 패스)
- */
-
 // 기능: argv가 숫자인지 4~5개 인자인지 확인, 리턴: int (맞으면 1 아니면 0)
 static int	check_input(int argc, char *argv[])
 {
@@ -72,6 +60,15 @@ static int	parse_input(t_input *data, char *argv[])
 	return (1);
 }
 
+// 기능: 동적 할당한 변수 할당 해제, 리턴: void
+void	free_philo(t_philo *philo)
+{
+	if (philo->data->fork != 0)
+		free(philo->data->fork);
+	if (philo != 0)
+		free(philo);
+}
+
 int main(int argc, char *argv[])
 {
 	t_input	data;
@@ -92,5 +89,6 @@ int main(int argc, char *argv[])
 		return (process_error("malloc"));
 	init_philo(philo, &data);
 	run_philo(philo);
+	free_philo(philo);
 	return (0);
 }
