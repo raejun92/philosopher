@@ -1,14 +1,5 @@
 #include "philo.h"
 
-// static int	only_one_philo(t_philo *philo)
-// {
-// 	if (philo->l_fork == philo->r_fork)
-// 	{
-// 		pthread_mutex_lock(philo->l_fork);
-
-// 	}
-// }
-
 void	spend_time(unsigned long time)
 {
 	unsigned long work_time;
@@ -18,18 +9,21 @@ void	spend_time(unsigned long time)
 		usleep(100);
 }
 
-void	grap_fork(t_philo *philo)
+int	grap_fork(t_philo *philo)
 {
 	pthread_mutex_lock(philo->l_fork);
 	send_message(philo, 1);
+	if (philo->l_fork == philo->r_fork) {
+		pthread_mutex_unlock(philo->l_fork);
+		return (1);
+	}
 	pthread_mutex_lock(philo->r_fork);
 	send_message(philo, 1);
+	return (0);
 }
 
 void	have_a_meal(t_philo *philo)
 {
-	int i;
-
 	philo->last_meal_time = get_current_time();
 	send_message(philo, 2);
 	spend_time(philo->data->time_to_eat);
@@ -52,14 +46,10 @@ void	*is_alive(void *tmp)
 		if (philo->data->check_death == 1 || philo->eat_cnt == philo->data->must_eat)
 			break ;
 		pthread_mutex_lock(&philo->data->only_one_death);
-		if (get_current_time() - philo->last_meal_time > philo->data->time_to_die)
+		if (philo->data->check_death == 0 && get_current_time() - philo->last_meal_time > philo->data->time_to_die)
 		{
 			philo->data->check_death = 1;
-			pthread_mutex_unlock(philo->l_fork);
-			if (philo->data->check_death == 1)
-			break ;
 			send_message(philo, 0);
-			return (NULL);
 		}
 		pthread_mutex_unlock(&philo->data->only_one_death);
 		usleep(20);
@@ -70,21 +60,16 @@ void	*is_alive(void *tmp)
 // 기능: 스레드는 포크를 집고 먹거나, 자거나, 생각하거나 죽거나 함, 리턴: void
 void *run_thread(void *tmp)
 {
-	t_philo	*philo;
+	t_philo		*philo;
 	pthread_t	monitor;
 
 	philo = (t_philo*)tmp;
 	pthread_create(&monitor, NULL, is_alive, philo);
-	// if (only_one_philo(philo))
-	// 	return (0);
 	if (philo->name % 2 == 0)
 		usleep(philo->data->time_to_eat);
-	while (42)
+	while (philo->data->check_death == 0)
 	{
-		if (philo->data->check_death == 1)
-			break ;
-		grap_fork(philo);
-		if (philo->data->check_death == 1)
+		if (grap_fork(philo) == 1)
 			break ;
 		have_a_meal(philo);
 		if (philo->data->check_death == 1)
@@ -111,7 +96,7 @@ void *run_thread(void *tmp)
 // 기능: philo의 각 스레드를 동작 시킴, 리턴: void
 void	run_philo(t_philo *philo)
 {
-	int 		i;
+	int i;
 
 	i = -1;
 	philo->data->start_time = get_current_time();
