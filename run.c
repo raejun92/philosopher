@@ -26,9 +26,14 @@ int	grap_fork(t_philo *philo)
 // 기능: 음식을 먹음, 리턴: 잘 먹을 경우 0, 누가 죽으면 1
 int	have_a_meal(t_philo *philo)
 {
-	philo->last_meal_time = get_current_time();
-	if (send_message(philo, 2) == 1)
+	if (grap_fork(philo) == 1)
 		return (1);
+	if (send_message(philo, 2) == 1)
+	{
+		drop_fork(philo);
+		return (1);
+	}
+	philo->last_meal_time = get_current_time();
 	spend_time(philo->data->time_to_eat);
 	philo->eat_cnt++;
 	return (0);
@@ -59,17 +64,19 @@ void *run_thread(void *tmp)
 {
 	t_philo			*philo;
 	pthread_t		monitor;
-	unsigned long	wait_time;
+	// unsigned long	wait_time;
 
 	philo = (t_philo*)tmp;
 	pthread_create(&monitor, NULL, is_alive, philo);
-	wait_time = get_current_time() + philo->data->time_to_eat;
+	// wait_time = get_current_time() + philo->data->time_to_eat;
+	// if (philo->name % 2 == 0)
+	// 	while (wait_time > get_current_time())
 	if (philo->name % 2 == 0)
-		while (wait_time > get_current_time())
+		usleep(philo->data->time_to_eat);
 	while (philo->data->check_death == 0)
 	{
-		if (grap_fork(philo) == 1)
-			break ;
+		// if (grap_fork(philo) == 1)
+		// 	break ;
 		if (have_a_meal(philo) == 1)
 			break ;
 		drop_fork(philo);
@@ -80,6 +87,7 @@ void *run_thread(void *tmp)
 		spend_time(philo->data->time_to_sleep);
 		if (send_message(philo, 4) == 1)
 			break ;
+		usleep(500);
 	}
 	pthread_join(monitor, NULL);
 	return (0);

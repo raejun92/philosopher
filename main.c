@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 		pthread_mutex_init(&data.fork[i], NULL);
 	pthread_mutex_init(&data.output, NULL);
 	pthread_mutex_init(&data.only_one_death, NULL);
-	philo = malloc(sizeof(philo) * data.people);
+	philo = malloc(sizeof(t_philo) * data.people);
 	if (!philo)
 		return (process_error("malloc"));
 	init_philo(philo, &data);
