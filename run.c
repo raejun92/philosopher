@@ -33,9 +33,18 @@ int	have_a_meal(t_philo *philo)
 		drop_fork(philo);
 		return (1);
 	}
-	philo->last_meal_time = get_current_time();
-	spend_time(philo->data->time_to_eat);
 	philo->eat_cnt++;
+	philo->last_meal_time = get_current_time();
+	// if (philo->data->check_death == 0)
+	// 	spend_time(philo->data->time_to_eat);
+	while (philo->data->check_death == 0 && (int)(get_current_time() - philo->last_meal_time) < philo->data->time_to_eat)
+		usleep(100);
+	if (philo->data->must_eat == philo->eat_cnt || philo->data->check_death == 1)
+	{
+		drop_fork(philo);
+		return (1);
+	}
+	drop_fork(philo);
 	return (0);
 }
 
@@ -79,12 +88,13 @@ void *run_thread(void *tmp)
 		// 	break ;
 		if (have_a_meal(philo) == 1)
 			break ;
-		drop_fork(philo);
-		if (philo->data->must_eat == philo->eat_cnt || philo->data->check_death == 1)
-			break ;
+		// drop_fork(philo);
+		// if (philo->data->must_eat == philo->eat_cnt || philo->data->check_death == 1)
+		// 	break ;
 		if (send_message(philo, 3) == 1)
 			break ;
-		spend_time(philo->data->time_to_sleep);
+		if (philo->data->check_death == 0)
+			spend_time(philo->data->time_to_sleep);
 		if (send_message(philo, 4) == 1)
 			break ;
 		usleep(500);
