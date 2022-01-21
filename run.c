@@ -33,12 +33,12 @@ int	have_a_meal(t_philo *philo)
 		drop_fork(philo);
 		return (1);
 	}
+	pthread_mutex_lock(&philo->data->only_one_death);
 	philo->eat_cnt++;
 	philo->last_meal_time = get_current_time();
-	// if (philo->data->check_death == 0)
-	// 	spend_time(philo->data->time_to_eat);
-	while (philo->data->check_death == 0 && (int)(get_current_time() - philo->last_meal_time) < philo->data->time_to_eat)
-		usleep(100);
+	pthread_mutex_unlock(&philo->data->only_one_death);
+	if (philo->data->check_death == 0)
+		spend_time(philo->data->time_to_eat);
 	if (philo->data->must_eat == philo->eat_cnt || philo->data->check_death == 1)
 	{
 		drop_fork(philo);
@@ -73,24 +73,15 @@ void *run_thread(void *tmp)
 {
 	t_philo			*philo;
 	pthread_t		monitor;
-	// unsigned long	wait_time;
 
 	philo = (t_philo*)tmp;
 	pthread_create(&monitor, NULL, is_alive, philo);
-	// wait_time = get_current_time() + philo->data->time_to_eat;
-	// if (philo->name % 2 == 0)
-	// 	while (wait_time > get_current_time())
 	if (philo->name % 2 == 0)
 		usleep(philo->data->time_to_eat);
 	while (philo->data->check_death == 0)
 	{
-		// if (grap_fork(philo) == 1)
-		// 	break ;
 		if (have_a_meal(philo) == 1)
 			break ;
-		// drop_fork(philo);
-		// if (philo->data->must_eat == philo->eat_cnt || philo->data->check_death == 1)
-		// 	break ;
 		if (send_message(philo, 3) == 1)
 			break ;
 		if (philo->data->check_death == 0)
