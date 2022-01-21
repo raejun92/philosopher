@@ -3,6 +3,7 @@
 test.c
 test2.c
 delete.c
+philo
 # Prerequisites
 *.d
 
