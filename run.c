@@ -37,8 +37,8 @@ int	have_a_meal(t_philo *philo)
 	philo->eat_cnt++;
 	philo->last_meal_time = get_current_time();
 	pthread_mutex_unlock(&philo->data->only_one_death);
-	if (philo->data->check_death == 0)
-		spend_time(philo->data->time_to_eat);
+	while (philo->data->check_death == 0 && (int)(get_current_time() - philo->last_meal_time) < philo->data->time_to_eat)
+		usleep(500);
 	if (philo->data->must_eat == philo->eat_cnt || philo->data->check_death == 1)
 	{
 		drop_fork(philo);
@@ -73,6 +73,7 @@ void *run_thread(void *tmp)
 {
 	t_philo			*philo;
 	pthread_t		monitor;
+	unsigned long	before_sleep;
 
 	philo = (t_philo*)tmp;
 	pthread_create(&monitor, NULL, is_alive, philo);
@@ -84,8 +85,9 @@ void *run_thread(void *tmp)
 			break ;
 		if (send_message(philo, 3) == 1)
 			break ;
-		if (philo->data->check_death == 0)
-			spend_time(philo->data->time_to_sleep);
+		before_sleep = get_current_time();
+		while (philo->data->check_death == 0 && (int)(get_current_time() - before_sleep) < philo->data->time_to_sleep)
+			usleep(500);
 		if (send_message(philo, 4) == 1)
 			break ;
 		usleep(500);
