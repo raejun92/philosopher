@@ -19,15 +19,6 @@ int	send_message(t_philo *philo, int status)
 	return (0);
 }
 
-void	spend_time(unsigned long time)
-{
-	unsigned long work_time;
-
-	work_time = get_current_time() + time;
-	while (work_time > get_current_time())
-		usleep(100);
-}
-
 void	drop_fork(t_philo *philo)
 {
 	pthread_mutex_unlock(philo->r_fork);
